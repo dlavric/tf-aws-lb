@@ -12,30 +12,25 @@ from diagrams.aws.network import ElbApplicationLoadBalancer
 from diagrams.onprem.network import Nginx
 
     
-# with Diagram("AWS-LoadBalancer", show=False, direction="TB"):
-#     Client("Client") >> EC2("EC2") >> VPC("VPC") >> PublicSubnet("PublicSubnet") >> PrivateSubnet("PrivateSubnet") >> InternetGateway("InternetGateway") >> NATGateway("NATGateway") >> ElbApplicationLoadBalancer("ElbApplicationLoadBalancer") >> Nginx("Nginx")
-
-
-with Diagram("AWS-LoadBalancer", show=False):
-        client = Client("Machine/User")
-        
-        with Cluster("Daniela VPC"):
-            intgat  = InternetGateway("Internet Gateway")
-            natgat  = NATGateway("NATGateway")  
-            lb      = ElbApplicationLoadBalancer ("Application Load Balancer")
-            
-            with Cluster("eu-west-1a"):
-                with Cluster("Private Subnet"):
-                    ec2     = EC2("EC2 Instance")
-             
-            with Cluster("eu-west-1b"): 
-                with Cluster("Public Subnet"):
-                    ec     = EC2("EC2 Instance")
-                    
+with Diagram("aws-lab", show=False, direction="TB"):
+        #client = Client("Machine/User")
         internet = Internet("Internet")
-             
-            # ec2 >> private
-             
-        client >> lb >> [ec2,ec] 
-            
-        ec2 >> natgat >> intgat >> internet
+        
+        with Cluster("eu-west-1"):
+            with Cluster("VPC"):
+                intgat  = InternetGateway("Internet Gateway")
+                natgat  = NATGateway("NATGateway")  
+                lb      = ElbApplicationLoadBalancer ("Application Load Balancer")
+                
+                with Cluster("eu-west-1a"):
+                    with Cluster("Private Subnet"):
+                        ec1     = EC2("EC2 Instance")
+                
+                with Cluster("eu-west-1b"): 
+                    with Cluster("Public Subnet"):
+                        ec2     = EC2("EC2 Instance")
+                
+            #client >> 
+            internet >> lb >> [ec1,ec2] 
+            internet << intgat << natgat << [ec1,ec2]
+        
